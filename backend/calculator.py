@@ -1,4 +1,8 @@
 def add(numbers):
     if not numbers:
         return 0
-    return sum(map(int, numbers.split(",")))
+    parts = numbers.split(",")
+    total = 0
+    for part in parts:
+        total += int(part)
+    return total
