@@ -1,2 +1,4 @@
 def add(numbers):
-    return 0
+    if not numbers:
+        return 0
+    return int(numbers)
