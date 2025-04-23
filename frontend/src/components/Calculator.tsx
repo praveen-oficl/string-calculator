@@ -1,47 +1,53 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 const Calculator: React.FC = () => {
-    const [input, setInput] = useState('');
-    const [result, setResult] = useState<string | null>(null);
-  
-    const handleCalculate = () => {
-      try {
-        let delimiter = /,|\n/;
-        let value = input;
-  
-        if (input.startsWith("//")) {
-          const match = input.match(/^\/\/(.)\n(.*)$/);
-          if (match) {
-            delimiter = new RegExp(match[1]);
-            value = match[2];
-          }
-        }
-  
-        const parts = value.split(delimiter).map(Number);
-        const negatives = parts.filter(n => n < 0);
-        if (negatives.length > 0) {
-          setResult(`Error: negative numbers not allowed - ${negatives.join(', ')}`);
-          return;
-        }
-  
-        const sum = parts.reduce((acc, val) => acc + val, 0);
-        setResult(`Sum: ${sum}`);
-      } catch {
-        setResult('Error: Invalid input');
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ numbers: input }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setResult(data.result);
+      } else {
+        setError(data.error);
       }
-    };
-  
-    return (
-      <div>
+    } catch (err) {
+      setError("Something went wrong. Try again.");
+    }
+  };
+
+  return (
+    <div>
+      <h2>String Calculator</h2>
+      <form onSubmit={handleSubmit}>
         <input
-          placeholder="Enter numbers"
+          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter numbers"
         />
-        <button onClick={handleCalculate}>Calculate</button>
-        {result && <p>{result}</p>}
-      </div>
-    );
-  };
-  
-  export default Calculator;
+        <button type="submit">Calculate</button>
+      </form>
+
+      {result !== null && <p>Result: {result}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+    </div>
+  );
+};
+
+export default Calculator;
