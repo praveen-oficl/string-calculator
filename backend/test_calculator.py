@@ -24,3 +24,9 @@ def test_negative_number_throws():
         add("1,-2,3")
     assert "negative numbers not allowed" in str(e.value)
     assert "-2" in str(e.value)
+
+def test_multiple_negatives():
+    with pytest.raises(Exception) as e:
+        add("1,-2,-3,4")
+    assert "negative numbers not allowed" in str(e.value)
+    assert "-2, -3" in str(e.value)
