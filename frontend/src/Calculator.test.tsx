@@ -7,3 +7,7 @@ test('renders input field', () => {
     expect(screen.getByPlaceholderText(/Enter numbers/i)).toBeInTheDocument();
 });
   
+test('renders calculate button', () => {
+  render(<Calculator />);
+  expect(screen.getByRole('button', { name: /calculate/i })).toBeInTheDocument();
+});
