@@ -12,7 +12,7 @@ test('renders calculate button', () => {
   expect(screen.getByRole('button', { name: /calculate/i })).toBeInTheDocument();
 });
 
-test('calculates sum of valid input', () => {
+test('calculate sum of valid input', () => {
   render(<Calculator />);
   fireEvent.change(screen.getByPlaceholderText(/Enter numbers/i), {
     target: { value: '1,2,3,4' }
@@ -21,4 +21,12 @@ test('calculates sum of valid input', () => {
   expect(screen.getByText(/Sum: 10/i)).toBeInTheDocument();
 });
 
+test('show error for negative input', () => {
+  render(<Calculator />);
+  fireEvent.change(screen.getByPlaceholderText(/Enter numbers/i), {
+    target: { value: '1,-2' }
+  });
+  fireEvent.click(screen.getByText(/calculate/i));
+  expect(screen.getByText(/negative numbers not allowed/i)).toBeInTheDocument();
+});
 
